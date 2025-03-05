@@ -51,9 +51,9 @@ public:
         try {
             std::string cmd_output = execute_command("pactl get-sink-mute @DEFAULT_SINK@");
             if (cmd_output.find("Mute: yes") == std::string::npos) {
-                return "muted";
-            } else {
                 return "unmuted";
+            } else {
+                return "muted";
             }
         } catch (const std::runtime_error& e) {
             std::cerr << "Error checking mute status: " << e.what() << '\n';
