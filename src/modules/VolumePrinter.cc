@@ -1,4 +1,6 @@
 #include <err.h>
+#include <iostream>
+#include <array>
 
 #include "../process_configuration.h"
 #include "../alsa.h"
@@ -15,7 +17,7 @@ public:
     VolumePrinter(void *config, const char *mix_name, const char *card):
         Base{
             config, "VolumePrinter"sv,
-            1, "vol {volume}%", nullptr,
+            1, "vol: {muted} {volume}%", nullptr,
             "mix_name", "card"
         }
     {
@@ -28,7 +30,35 @@ public:
     }
     void do_print(const char *format)
     {
-        print(format, fmt::arg("volume", get_audio_volume()));
+        print(format, 
+            fmt::arg("volume", get_audio_volume()),
+            fmt::arg("muted", is_audio_muted())
+            );
+    }
+    std::string execute_command(const char* cmd) {
+        std::array<char, 128> buffer;
+        std::string result;
+        std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
+        if (!pipe) {
+            throw std::runtime_error("popen() failed!");
+        }
+        while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) {
+            result += buffer.data();
+        }
+        return result;
+    }
+    std::string is_audio_muted() {
+        try {
+            std::string cmd_output = execute_command("pactl get-sink-mute @DEFAULT_SINK@");
+            if (cmd_output.find("Mute: yes") == std::string::npos) {
+                return "muted";
+            } else {
+                return "unmuted";
+            }
+        } catch (const std::runtime_error& e) {
+            std::cerr << "Error checking mute status: " << e.what() << '\n';
+            return "unknown";
+        }
     }
     void reload()
     {}

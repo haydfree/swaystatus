@@ -18,7 +18,7 @@ public:
     TimePrinter(void *config):
         Base{
             config, "TimePrinter"sv,
-            1, "%Y-%m-%d %T", nullptr
+            1, "%a %Y-%m-%d %T", nullptr
         }
     {}
 

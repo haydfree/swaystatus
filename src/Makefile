@@ -11,8 +11,6 @@ EXCEPTION ?= true
 CC := clang
 CXX := clang++
 
-CFLAGS := -Wall -Wextra -Werror
-
 ifeq ($(DEBUG), false)
 	CFLAGS += -O3 -flto
 	CFLAGS += -fno-asynchronous-unwind-tables -fno-unwind-tables
@@ -27,6 +25,8 @@ endif
 ifeq ($(EXCEPTION), false)
 	CXXFLAGS += -fno-exceptions
 endif
+
+CXXFLAGS += -Wno-vla-cxx-extension
 
 CFLAGS += $(shell pkg-config --cflags alsa json-c)
 LIBS := $(shell pkg-config --libs alsa json-c) -ldl -lsensors

@@ -25,6 +25,7 @@ class MemoryUsagePrinter: public Base {
     Fd meminfo_fd;
     std::size_t memtotal = -1;
     std::string buffer;
+    std::size_t mem_used;
 
     void read_meminfo()
     {
@@ -65,7 +66,7 @@ class MemoryUsagePrinter: public Base {
         if (errno == ERANGE)
             err(1, "%s on %s failed", "strtoumax", "/proc/meminfo");
         if (strncmp(endptr, " kB\n", 4) != 0)
-            errx(1, "%s on %s failed", "Assumption", "/proc/meminfo");
+            errx(1, "%s on %s failed", "Assumption", "/proc/meminfo"); 
     
         return val * 1000;
     }
@@ -74,6 +75,15 @@ class MemoryUsagePrinter: public Base {
     {
         return swaystatus::LazyEval{[=]() noexcept {
             return mem_size_t{get_memusage(element)};
+        }};
+    }
+
+    auto get_mem_used() {
+        std::size_t mem_total = get_memusage("MemTotal"sv);
+        std::size_t mem_free = get_memusage("MemFree"sv);
+        mem_used = mem_total - mem_free; 
+        return swaystatus::LazyEval{[=]() noexcept {
+            return mem_size_t{mem_used};
         }};
     }
 
@@ -98,6 +108,7 @@ public:
             format,
             fmt::arg("MemFree", get_memusage_lazy("MemFree")),
             fmt::arg("MemAvailable", get_memusage_lazy("MemAvailable")),
+            fmt::arg("MemUsed", get_mem_used()),
             fmt::arg("Buffers", get_memusage_lazy("Buffers")),
             fmt::arg("Cached", get_memusage_lazy("Cached")),
             fmt::arg("SwapCached", get_memusage_lazy("SwapCached")),
