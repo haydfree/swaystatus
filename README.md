@@ -263,6 +263,7 @@ When all sensors are shown, `swaystatus` will then update the sensors reading fr
 
  - `MemTotal`
  - `MemFree`
+ - `MemUsed`
  - `MemAvailable`
  - `Buffers`
  - `Cached`
@@ -284,6 +285,7 @@ The unit (supports 'BKMGTPEZY') of the variables printed can be specified.
 #### Volume variables:
 
  - `volume`
+ - `muted`
 
 #### Load variables:
 
@@ -394,7 +396,7 @@ Check [`example-config.json`] for the example configuration.
 
 ```
 bar {
-    status_command swaystatus
+    status_command swaystatus path/to/swaystatus/config.json
 }
 ```
 
