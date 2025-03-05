@@ -1,6 +1,6 @@
 # swaystatus
 
-A lightweight yet feature-rich status bar for i3bar or swaybar.
+Swaystatus is a lightweight yet feature-rich status bar for i3 or sway. Thanks to @NobodyXu for making this awesome project. 
 
 ![screenshot]
 
