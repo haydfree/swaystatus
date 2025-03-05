@@ -80,8 +80,9 @@ class MemoryUsagePrinter: public Base {
 
     auto get_mem_used() {
         std::size_t mem_total = get_memusage("MemTotal"sv);
-        std::size_t mem_free = get_memusage("MemFree"sv);
-        mem_used = mem_total - mem_free; 
+        //std::size_t mem_free = get_memusage("MemFree"sv);
+        std::size_t mem_avail = get_memusage("MemAvailable"sv);
+        mem_used = mem_total - mem_avail; 
         return swaystatus::LazyEval{[=]() noexcept {
             return mem_size_t{mem_used};
         }};
